@@ -29,6 +29,56 @@ args = parser.parse_args()
 
 print(args)
 
+
+def insertion(seq1, seq2):
+    if len(seq1) == 1 + len(seq2):
+        for i in range(len(seq1)):
+            new_seq = seq1[:i] + seq1[i+1:]
+            if new_seq == seq2:
+                return True
+    return False
+
+def deletion(seq1, seq2):
+    return insertion(seq2, seq1)
+
+def substitution(seq1, seq2):
+    if len(seq1) == len(seq2):
+        count_diff = 0
+        for elt1, elt2 in zip(seq1, seq2):
+            if elt1 != elt2:
+                count_diff += 1
+
+        if count_diff == 1:
+            return True
+    return False
+
+def swap(seq1, seq2):
+    if len(seq1) == len(seq2):
+        diff_pairs = []
+        for elt1, elt2 in zip(seq1, seq2):
+            if elt1 != elt2:
+                diff_pairs.append([elt1, elt2])
+        if len(diff_pairs) == 2:
+            if diff_pairs[0] == diff_pairs[1][::-1]:
+                return True
+
+    return False
+
+def classify_output(seq1, seq2):
+    if seq1 == seq2:
+        return "correct"
+    elif insertion(seq1, seq2):
+        return "insertion"
+    elif deletion(seq1, seq2):
+        return "deletion"
+    elif substitution(seq1, seq2):
+        return "substitution"
+    elif swap(seq1, seq2):
+        return "swap"
+    else:
+        return "other"
+
+
 # Set random seed
 if args.random_seed is not None:
     random.seed(args.random_seed)
@@ -95,6 +145,11 @@ def count_deviations(seq):
 first = True
 
 correct_dict = {}
+output_categories = {}
+category_list = ["correct", "insertion", "deletion", "substitution", "swap", "other"]
+for category in category_list:
+    output_categories[category] = 0
+
 for eval_set_index, elt in enumerate(all_eval_set):
     if eval_set_index % 1000 == 0:
         print(eval_set_index, len(all_eval_set))
@@ -118,15 +173,19 @@ for eval_set_index, elt in enumerate(all_eval_set):
         if deviations not in correct_dict:
             correct_dict[deviations] = [0,0]
 
+        category = classify_output(filtered, right_answer)
+        output_categories[category] += 1
 
         if filtered == right_answer:
             correct_dict[deviations][0] += 1
         else:
             if args.print_errors:
+                print(category)
                 print(right_answer)
                 print(filtered)
                 print("")
         correct_dict[deviations][1] += 1
+
 
 print("Eval results:")
 
@@ -142,6 +201,11 @@ while not done:
         print(str(deviation_count) + " deviations:", correct*1.0/total, correct, total)
         deviation_count += 1
 
+print("")
+for category in output_categories:
+    print(category, output_categories[category])
+
+print("")
 
 # Print the parameter count
 pytorch_total_params = sum(p.numel() for p in model.parameters())

@@ -1,2 +1,5 @@
+__pycache__/
+logs/
 weights/
 bash_script_to_marcc_scr.py
+.venv/

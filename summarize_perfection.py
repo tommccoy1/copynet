@@ -9,6 +9,13 @@ all_architectures_4dev = {}
 all_architectures_5dev = {}
 all_architectures_6dev = {}
 
+all_architectures_correct = {}
+all_architectures_insertion = {}
+all_architectures_deletion = {}
+all_architectures_substitution = {}
+all_architectures_swap = {}
+all_architectures_other = {}
+
 count_perfection = {}
 
 architectures = ["lstm", "gru", "transformer", "tp_transformer"]
@@ -21,6 +28,13 @@ for architecture in architectures:
     all_architectures_4dev[architecture] = []
     all_architectures_5dev[architecture] = []
     all_architectures_6dev[architecture] = []
+
+    all_architectures_correct[architecture] = []
+    all_architectures_insertion[architecture] = []
+    all_architectures_deletion[architecture] = []
+    all_architectures_substitution[architecture] = []
+    all_architectures_swap[architecture] = []
+    all_architectures_other[architecture] = []
 
     count_perfection[architecture] = [0,0]
 
@@ -59,6 +73,27 @@ for architecture in architectures:
                 if line[0] == "6":
                     all_architectures_6dev[architecture].append(acc)
 
+            if line.startswith("correct") and len(line.strip().split()) == 2:
+                all_architectures_correct[architecture].append(int(line.strip().split()[1]))
+
+            if line.startswith("insertion") and len(line.strip().split()) == 2:
+                all_architectures_insertion[architecture].append(int(line.strip().split()[1]))
+
+            if line.startswith("deletion") and len(line.strip().split()) == 2:
+                all_architectures_deletion[architecture].append(int(line.strip().split()[1]))
+
+            if line.startswith("substitution") and len(line.strip().split()) == 2:
+                all_architectures_substitution[architecture].append(int(line.strip().split()[1]))
+
+            if line.startswith("swap") and len(line.strip().split()) == 2:
+                all_architectures_swap[architecture].append(int(line.strip().split()[1]))
+
+            if line.startswith("other") and len(line.strip().split()) == 2:
+                all_architectures_other[architecture].append(int(line.strip().split()[1]))
+
+
+
+
         if total_total == 100000:
             if total_correct == total_total:
                 count_perfection[architecture][0] += 1
@@ -81,6 +116,13 @@ for architecture in architectures:
     print(architecture)
     for i in range(6):
         print(str(i) + " deviations:", mean([all_architectures_0dev, all_architectures_1dev, all_architectures_2dev, all_architectures_3dev, all_architectures_4dev, all_architectures_5dev, all_architectures_6dev][i][architecture]))
+    count_errors = sum(all_architectures_insertion[architecture]) + sum(all_architectures_deletion[architecture]) + sum(all_architectures_substitution[architecture]) + sum(all_architectures_swap[architecture]) + sum(all_architectures_other[architecture])
+    print("Insertion", sum(all_architectures_insertion[architecture]), sum(all_architectures_insertion[architecture])*1.0/count_errors)
+    print("Deletion", sum(all_architectures_deletion[architecture]), sum(all_architectures_deletion[architecture])*1.0/count_errors)
+    print("Substitution", sum(all_architectures_substitution[architecture]), sum(all_architectures_substitution[architecture])*1.0/count_errors)
+    print("Swap", sum(all_architectures_swap[architecture]), sum(all_architectures_swap[architecture])*1.0/count_errors)
+    print("Other", sum(all_architectures_other[architecture]), sum(all_architectures_other[architecture])*1.0/count_errors)
+    print("Total errors", count_errors)
     print("")
 
 

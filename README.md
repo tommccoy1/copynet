@@ -9,7 +9,14 @@ mkdir weights
 mkdir logs
 ```
 
+Install PyTorch. We used PyTorch version 1.11.0+cu102, and Python 3.8.1.
+```
+pip install torch
+```
+
 ## Data creation
+
+We have included the exact data files we used in the `data/` folder.
 
 ```
 python create_datasets.py --n_train 10000 --n_valid 1000 --n_test 1000 --n_gen 1000 --prefix length5_ninn_withholding --length 5 --vocab_size 10 --withheld 0-0,1-1,2-2,3-3,4-4
@@ -31,7 +38,7 @@ Now all of the training commands to be run will be in the following scripts, whi
 ```
 scripts_rnns_perfection.sh
 scripts_transformers_perfection.sh
-scripts_runs_training_curve.sh
+scripts_rnns_training_curve.sh
 scripts_transformers_training_curve.sh
 ```
 
@@ -46,6 +53,12 @@ And then run the scripts that have been created:
 ```
 scripts_rnns_perfection_eval.sh
 scripts_transformers_perfection_eval.sh
+```
+
+Summarize the results:
+```
+python summarize_perfection.py
+python summarize_training_curve.py
 ```
 
 ## Other files:
